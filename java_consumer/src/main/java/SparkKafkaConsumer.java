@@ -2,12 +2,17 @@ import org.apache.spark.SparkConf;
 import org.apache.spark.streaming.Duration;
 import org.apache.spark.streaming.api.java.*;
 import org.apache.spark.streaming.kafka.KafkaUtils;
+import java.util.ArrayList;
 
 import scala.Tuple2;
-import java.util.Arrays;
+
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Pattern;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import scala.tools.scalap.Main;
 
 public class SparkKafkaConsumer {
 
@@ -37,11 +42,24 @@ public class SparkKafkaConsumer {
 
         JavaDStream<String> lines = messages.map(Tuple2::_2);
 
-        JavaDStream<Object> wordCounts =
-                lines.map(s -> new String(s));
 
+        JavaDStream<Object> wordCounts =lines.map(d ->{
+            ArrayList<String> currencies = new ArrayList<String>();
+            JSONParser parse = new JSONParser();
+            JSONArray array = (JSONArray) parse.parse(d);
+            for(int i=0;i<array.size();i++) {
+                JSONObject obj = (JSONObject) array.get(i);
+                d = obj.toJSONString();
+                currencies.add(d);
+                System.out.println(d);
+            }
+            return currencies;
+
+        } );
         wordCounts.print();
+
         jssc.start();
         jssc.awaitTermination();
     }
 }
+
