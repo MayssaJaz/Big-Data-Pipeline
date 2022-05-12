@@ -2,6 +2,8 @@ import org.apache.spark.SparkConf;
 import org.apache.spark.streaming.Duration;
 import org.apache.spark.streaming.api.java.*;
 import org.apache.spark.streaming.kafka.KafkaUtils;
+
+import java.sql.Timestamp;
 import java.util.ArrayList;
 
 import scala.Tuple2;
@@ -25,7 +27,7 @@ public class SparkKafkaConsumer {
     private static Table table1;
     private static String tableName = "crypto";
     private static String family1 = "details";
-    public static void storeInHbase( String id, String price, String timestamp)  throws IOException {
+    public static void storeInHbase( String id, String price)  throws IOException {
 
         Configuration config = HBaseConfiguration.create();
         Connection connection = ConnectionFactory.createConnection(config);
@@ -34,13 +36,14 @@ public class SparkKafkaConsumer {
         table1 = connection.getTable(TableName.valueOf(tableName));
 
         try {
+            Timestamp timestamp = new Timestamp(System.currentTimeMillis());
             System.out.println("Adding crypto");
-            byte[] row1 = Bytes.toBytes(id + timestamp);
+            byte[] row1 = Bytes.toBytes(String.valueOf(timestamp));
             Put p = new Put(row1);
 
             p.addColumn(family1.getBytes(), "id".getBytes(), Bytes.toBytes(id));
             p.addColumn(family1.getBytes(), "price".getBytes(), Bytes.toBytes(price));
-            p.addColumn(family1.getBytes(), "timestamp".getBytes(), Bytes.toBytes(timestamp));
+            p.addColumn(family1.getBytes(), "timestamp".getBytes(), Bytes.toBytes(String.valueOf(timestamp)));
             table1.put(p);
         } catch (Exception e) {
             table1.close();
@@ -85,8 +88,8 @@ public class SparkKafkaConsumer {
                 JSONObject obj = (JSONObject) array.get(i);
                 System.out.println("id==="+obj.get("id"));
                 System.out.println("price==="+obj.get("price"));
-                System.out.println("price_timestamp==="+obj.get("price_timestamp"));
-                storeInHbase( (String) obj.get("id"), (String) obj.get("price"), (String) obj.get("price_timestamp"));
+                //System.out.println("price_timestamp==="+obj.get("price_timestamp"));
+                storeInHbase( (String) obj.get("id"), (String) obj.get("price"));
                 d = obj.toJSONString();
                 currencies.add(d);
             }
