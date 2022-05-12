@@ -8,18 +8,15 @@ import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    DashboardComponent
-  ],
+  declarations: [AppComponent, DashboardComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
     NgxChartsModule,
     HttpClientModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

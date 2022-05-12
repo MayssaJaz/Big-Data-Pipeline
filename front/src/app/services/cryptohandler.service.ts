@@ -11,6 +11,6 @@ export class CryptohandlerService {
 
   getCurrencies(): Observable<any> {
     let params = new HttpParams();
-    return this.http.get("https://627be077b54fe6ee0090a637.mockapi.io/currencies");
+    return this.http.get("http://127.0.0.1:5000");
   }
 }

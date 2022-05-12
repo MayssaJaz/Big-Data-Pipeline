@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { EChartsOption } from 'echarts';
 import { CryptoCurrencyDto } from 'src/app/dto/crypto.dto';
 import { CryptohandlerService } from 'src/app/services/cryptohandler.service';
 
@@ -11,9 +10,10 @@ import { CryptohandlerService } from 'src/app/services/cryptohandler.service';
 export class DashboardComponent implements OnInit {
   constructor(private cryptoHandler: CryptohandlerService) {}
   currenciesDetails: any[] = [];
-  view: any[] = [1500,500];
+  view: any[] = [1500, 500];
 
   // options
+  currency:CryptoCurrencyDto|undefined;
   showXAxis = true;
   showYAxis = true;
   gradient = false;
@@ -24,23 +24,17 @@ export class DashboardComponent implements OnInit {
   yAxisLabel = 'Price';
 
   ngOnInit(): void {
-    this.cryptoHandler.getCurrencies().subscribe((data) => {
-      this.currenciesDetails = [];
-      data.forEach((item: CryptoCurrencyDto) => {
-        this.currenciesDetails.push({
-          name: item.id,
-          value: item.price,
-        });
-      });
-    });
+    
 
     setInterval(() => {
       this.cryptoHandler.getCurrencies().subscribe((data) => {
         this.currenciesDetails = [];
-        data.forEach((item: CryptoCurrencyDto) => {
+       data.message.forEach((item: string) => {
+          this.currency= JSON.parse(item)
+          if (this.currency)
           this.currenciesDetails.push({
-            name: item.id,
-            value: item.price,
+            name: this.currency.id,
+            value: this.currency.price,
           });
         });
       });
