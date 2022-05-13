@@ -21,7 +21,8 @@ quarks = [{'name': 'up', 'charge': '+2/3'},
 def hello_world():
 
     json_array=[]
-    for key, data in table.scan():
+    last_elements=list(table.scan())
+    for key, data in last_elements[-100:]:
        id=data.get(b'details:id').decode('utf-8')
        price=data.get(b'details:price').decode('utf-8')
        timestamp=data.get(b'details:timestamp').decode('utf-8')
@@ -31,7 +32,7 @@ def hello_world():
        currency['timestamp']=timestamp
        json_data = json.dumps(currency)
        json_array.append(json_data)
-    return jsonify({'message':json_array[-100:]})
+    return jsonify({'message':json_array})
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5000, debug=True)

@@ -37,7 +37,6 @@ public class SparkKafkaConsumer {
 
         try {
             Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-            System.out.println("Adding crypto");
             byte[] row1 = Bytes.toBytes(String.valueOf(timestamp));
             Put p = new Put(row1);
 
@@ -49,6 +48,9 @@ public class SparkKafkaConsumer {
             table1.close();
             connection.close();
 
+        }
+        finally {
+            connection.close();
         }
 
     }
@@ -86,8 +88,6 @@ public class SparkKafkaConsumer {
             JSONArray array = (JSONArray) parse.parse(d);
             for(int i=0;i<array.size();i++) {
                 JSONObject obj = (JSONObject) array.get(i);
-                System.out.println("id==="+obj.get("id"));
-                System.out.println("price==="+obj.get("price"));
                 //System.out.println("price_timestamp==="+obj.get("price_timestamp"));
                 storeInHbase( (String) obj.get("id"), (String) obj.get("price"));
                 d = obj.toJSONString();

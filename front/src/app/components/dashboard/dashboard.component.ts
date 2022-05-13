@@ -24,7 +24,17 @@ export class DashboardComponent implements OnInit {
   yAxisLabel = 'Price';
 
   ngOnInit(): void {
-    
+    this.cryptoHandler.getCurrencies().subscribe((data) => {
+      this.currenciesDetails = [];
+     data.message.forEach((item: string) => {
+        this.currency= JSON.parse(item)
+        if (this.currency)
+        this.currenciesDetails.push({
+          name: this.currency.id,
+          value: this.currency.price,
+        });
+      });
+    });
 
     setInterval(() => {
       this.cryptoHandler.getCurrencies().subscribe((data) => {
@@ -38,6 +48,6 @@ export class DashboardComponent implements OnInit {
           });
         });
       });
-    }, 30000);
+    }, 40000);
   }
 }
